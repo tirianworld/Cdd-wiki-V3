@@ -339,22 +339,26 @@ export function CategoryView() {
         </div>
       )}
 
-      {/* 2. Menú de Subcategorías ("similar a inicio, pero mezclado con el de categoría") */}
+      {/* 2. Menú de Subcategorías */}
       {hasSubcategories && (
-        <section className="space-y-4 bg-card/40 border border-border/70 rounded-2xl p-4 sm:p-6 shadow-sm">
-          {/* Header de la sección de subcategorías (Estilo Inicio) */}
+        <section className={`border border-border/70 rounded-2xl shadow-sm transition-all bg-card/40 ${
+          isSubcatMinimized ? "p-3 sm:p-4" : "p-4 sm:p-6 space-y-4"
+        }`}>
+          {/* Header de la sección de subcategorías */}
           <div className="flex items-center justify-between gap-3 flex-wrap">
-            <div className="flex items-center gap-2">
-              <TarotLogo className="h-4 w-4 text-primary" />
-              <h2 className="font-heading font-semibold text-sm sm:text-base text-foreground tracking-wider uppercase">
-                Explorar Subcategorías de {currentCategory?.name}
+            <div className="flex items-center gap-2.5">
+              <div className="h-6 w-6 rounded-full bg-secondary/80 border border-border/60 flex items-center justify-center shrink-0">
+                <TarotLogo className="h-3.5 w-3.5 text-primary" />
+              </div>
+              <h2 className="font-heading font-semibold text-xs sm:text-sm text-foreground/90 tracking-wider uppercase">
+                EXPLORAR SUBCATEGORÍAS DE {currentCategory?.name}
               </h2>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
               {/* Botón de alternancia de vista: Cuadrícula estándar vs Secciones agrupadas */}
               {selectedSubcategory === "all" && (
-                <div className="hidden sm:flex items-center bg-secondary/60 border border-border/60 rounded-lg p-0.5 text-xs">
+                <div className="flex items-center bg-secondary/60 border border-border/60 rounded-lg p-0.5 text-xs">
                   <button
                     type="button"
                     onClick={() => setViewLayout("standard")}
@@ -376,7 +380,7 @@ export function CategoryView() {
                         ? "bg-card text-foreground shadow-xs font-semibold"
                         : "text-muted-foreground hover:text-foreground"
                     }`}
-                    title="Vista organizada por secciones de cada subcategoría (Estilo Inicio)"
+                    title="Vista organizada por secciones de cada subcategoría"
                   >
                     <ListFilter className="h-3 w-3" />
                     <span>Por Secciones</span>
@@ -384,128 +388,62 @@ export function CategoryView() {
                 </div>
               )}
 
-              {/* Botón para minimizar / desplegar menú de subcategorías (Igual que en Inicio) */}
+              {/* Botón para desplegar / minimizar */}
               <button
                 type="button"
                 onClick={toggleSubcatMinimized}
-                className="flex items-center gap-1.5 px-2.5 py-1 text-xs rounded-lg border border-border/60 bg-secondary/40 hover:bg-secondary/70 text-muted-foreground hover:text-foreground transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg border border-border/60 bg-secondary/40 hover:bg-secondary text-primary font-medium transition-colors cursor-pointer"
                 title={isSubcatMinimized ? "Desplegar subcategorías" : "Minimizar subcategorías"}
               >
+                <span>{isSubcatMinimized ? "Desplegar" : "Minimizar"}</span>
                 {isSubcatMinimized ? (
-                  <>
-                    <Maximize2 className="h-3.5 w-3.5 text-primary" />
-                    <span className="hidden sm:inline font-medium">Desplegar</span>
-                  </>
+                  <ChevronDown className="h-3.5 w-3.5 text-primary" />
                 ) : (
-                  <>
-                    <Minimize2 className="h-3.5 w-3.5" />
-                    <span className="hidden sm:inline font-medium">Minimizar</span>
-                  </>
+                  <ChevronUp className="h-3.5 w-3.5 text-primary" />
                 )}
               </button>
-
-              {/* Controles de fila por pasos si hay múltiples filas de subcategorías */}
-              {!isSubcatMinimized && totalSubcatRows > 2 && (
-                <div className="flex items-center gap-2 text-xs text-muted-foreground select-none">
-                  <span className="text-[11px] font-mono tracking-tight text-muted-foreground/80">
-                    Fila {subcatRow + 1}–{Math.min(subcatRow + 2, totalSubcatRows)} de {totalSubcatRows}
-                  </span>
-                  <div className="flex items-center bg-secondary/40 border border-border/50 rounded-lg p-0.5">
-                    <button
-                      type="button"
-                      onClick={() => setSubcatRow((r) => Math.max(0, r - 1))}
-                      disabled={subcatRow === 0}
-                      className="p-1 rounded hover:bg-secondary text-foreground disabled:opacity-25 disabled:pointer-events-none transition-colors"
-                      title="Fila anterior"
-                    >
-                      <ChevronUp className="h-3.5 w-3.5" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setSubcatRow((r) => Math.min(maxSubcatRow, r + 1))}
-                      disabled={subcatRow >= maxSubcatRow}
-                      className="p-1 rounded hover:bg-secondary text-foreground disabled:opacity-25 disabled:pointer-events-none transition-colors"
-                      title="Siguiente fila"
-                    >
-                      <ChevronDown className="h-3.5 w-3.5" />
-                    </button>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
 
-          {/* Menú Minimizado (Estilo Inicio) */}
-          {isSubcatMinimized ? (
-            <div
-              onClick={toggleSubcatMinimized}
-              className="cursor-pointer bg-card/40 border border-border/60 hover:border-primary/50 rounded-xl p-3 sm:p-4 flex items-center justify-between transition-all group shadow-xs hover:shadow-sm"
-            >
-              <div className="flex items-center gap-3 overflow-hidden">
-                <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors font-medium">
-                  Subcategorías de {currentCategory?.name}
-                </span>
-                <div className="flex items-center gap-1.5 overflow-hidden opacity-75 group-hover:opacity-100 transition-opacity">
-                  {subcategories.slice(0, 6).map((s) => {
-                    const SubIcon = s.icon;
-                    return (
-                      <span
-                        key={s.slug}
-                        className="h-7 w-7 rounded-lg flex items-center justify-center bg-secondary/60 border border-border/40 shrink-0"
-                        title={s.name}
-                      >
-                        <SubIcon className="h-3.5 w-3.5" style={{ color: s.color }} />
-                      </span>
-                    );
-                  })}
-                  {subcategories.length > 6 && (
-                    <span className="text-[10px] text-muted-foreground font-mono bg-secondary/50 px-1.5 py-0.5 rounded border border-border/30">
-                      +{subcategories.length - 6}
-                    </span>
-                  )}
-                </div>
-              </div>
-              <span className="text-xs text-primary font-medium flex items-center gap-1 shrink-0 group-hover:underline">
-                Desplegar <ChevronDown className="h-3.5 w-3.5" />
-              </span>
-            </div>
-          ) : (
-            /* Grid de Tarjetas de Subcategorías (Exacto diseño y proporciones de Inicio) */
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {subcategories.map((subcat) => {
-                const SubIcon = subcat.icon;
+          {/* Grid de Tarjetas de Subcategorías cuando está desplegado */}
+          {!isSubcatMinimized && (
+            <div className="pt-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {subcategories.map((subcat) => {
+                  const SubIcon = subcat.icon;
 
-                return (
-                  <div key={subcat.id || subcat.slug} className="relative group">
-                    <Link
-                      to={`/categoria/${subcat.slug}`}
-                      className="block bg-card border border-border/75 rounded-xl p-4 sm:p-5 hover:border-primary/45 transition-all hover:bg-secondary/20 hover:shadow-sm h-[140px] flex flex-col justify-between"
-                    >
-                      <div>
-                        <div className="flex items-center justify-between mb-2">
-                          <div
-                            className="h-8 w-8 rounded-lg flex items-center justify-center transition-colors group-hover:scale-105"
-                            style={{ 
-                              backgroundColor: `${subcat.color}15`,
-                              border: `1px solid ${subcat.color}35`
-                            }}
-                          >
-                            <SubIcon className="h-4 w-4" style={{ color: subcat.color }} />
+                  return (
+                    <div key={subcat.id || subcat.slug} className="relative group">
+                      <Link
+                        to={`/categoria/${subcat.slug}`}
+                        className="block bg-card border border-border/75 rounded-xl p-4 sm:p-5 hover:border-primary/45 transition-all hover:bg-secondary/20 hover:shadow-sm h-[140px] flex flex-col justify-between"
+                      >
+                        <div>
+                          <div className="flex items-center justify-between mb-2">
+                            <div
+                              className="h-8 w-8 rounded-lg flex items-center justify-center transition-colors group-hover:scale-105"
+                              style={{ 
+                                backgroundColor: `${subcat.color}15`,
+                                border: `1px solid ${subcat.color}35`
+                              }}
+                            >
+                              <SubIcon className="h-4 w-4" style={{ color: subcat.color }} />
+                            </div>
                           </div>
+
+                          <h3 className="font-heading text-xs sm:text-sm font-bold text-foreground group-hover:text-primary transition-colors tracking-wide uppercase line-clamp-1">
+                            {subcat.name}
+                          </h3>
                         </div>
 
-                        <h3 className="font-heading text-xs sm:text-sm font-bold text-foreground group-hover:text-primary transition-colors tracking-wide uppercase line-clamp-1">
-                          {subcat.name}
-                        </h3>
-                      </div>
-
-                      <p className="text-[11px] text-muted-foreground line-clamp-2 leading-relaxed font-light">
-                        {subcat.description || "Subcategoría mística de Caldo de Dragón."}
-                      </p>
-                    </Link>
-                  </div>
-                );
-              })}
+                        <p className="text-[11px] text-muted-foreground line-clamp-2 leading-relaxed font-light">
+                          {subcat.description || "Subcategoría mística de Caldo de Dragón."}
+                        </p>
+                      </Link>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
         </section>
